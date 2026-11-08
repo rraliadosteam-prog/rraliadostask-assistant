@@ -10,7 +10,7 @@ import {
   updateTask,
   type DomainError,
 } from "./core";
-import type { HelperProposal, SaveState, TaskStatus, Workspace } from "./domain";
+import type { HelperProposal, SaveState, Settings, TaskStatus, Workspace } from "./domain";
 import { applyHelperProposal, createHelperProposal, HELPER_LABELS, type HelperId } from "./helpers";
 import {
 	createWorkspaceAt,
@@ -29,6 +29,12 @@ const STATUS_NAMES: Record<TaskStatus, string> = {
   blocked: "Bloqueadas",
   done: "Hechas",
   canceled: "Canceladas",
+};
+
+const THEME_LABELS: Record<Settings["theme"], string> = {
+  system: "Sistema",
+  light: "Claro",
+  dark: "Oscuro",
 };
 
 export default function App() {
@@ -50,6 +56,26 @@ export default function App() {
   const [handoffPayload, setHandoffPayload] = useState("");
   const [handoffStale, setHandoffStale] = useState(false);
   const [newChecklist, setNewChecklist] = useState("");
+  const [themePreference, setThemePreference] = useState<Settings["theme"]>("system");
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem("rr-tareas:theme");
+      if (stored === "light" || stored === "dark" || stored === "system") setThemePreference(stored);
+    } catch {
+      // The default system theme remains active when storage is unavailable.
+    }
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = themePreference;
+    document.documentElement.style.colorScheme = themePreference === "system" ? "light dark" : themePreference;
+    try {
+      window.localStorage.setItem("rr-tareas:theme", themePreference);
+    } catch {
+      // Theme still applies for this session when storage is unavailable.
+    }
+  }, [themePreference]);
 
   useEffect(() => {
     void createPlatform().then(async (created) => {
@@ -62,6 +88,7 @@ export default function App() {
         const loaded = await loadWorkspace(created, lastPath);
         workspacePathRef.current = lastPath;
         setWorkspace(loaded);
+        setThemePreference(loaded.settings.theme ?? "system");
         setWorkspacePath(lastPath);
         setSaveState("saved");
         setMessage(`Workspace abierto: ${loaded.name}`);
@@ -101,10 +128,11 @@ export default function App() {
     if (!platform) return;
     const root = await platform.defaultDataRoot();
     try {
-      const { workspace: next, path } = await createWorkspaceAt(platform, root, "RR Aliados");
+      const { workspace: next, path } = await createWorkspaceAt(platform, root, "RR Aliados", themePreference);
       workspacePathRef.current = path;
       setWorkspacePath(path);
       setWorkspace(next);
+      setThemePreference(themePreference);
       setSaveState("saved");
       await rememberWorkspacePath(platform, root, path);
       setMessage("Workspace creado. Todo queda en este equipo.");
@@ -122,6 +150,7 @@ export default function App() {
       const loaded = await loadWorkspace(platform, path);
       workspacePathRef.current = path;
       setWorkspace(loaded);
+      setThemePreference(loaded.settings.theme ?? "system");
       setWorkspacePath(path);
       setSaveState("saved");
       const root = await platform.defaultDataRoot();
@@ -256,13 +285,22 @@ export default function App() {
     }
   }
 
-  if (!platform) return <main className="boot">Preparando RR Tareas…</main>;
+  async function changeTheme(theme: Settings["theme"]) {
+    setThemePreference(theme);
+    if (!workspace) return;
+    await persist({
+      ...workspace,
+      settings: { ...workspace.settings, theme },
+    });
+  }
+
+  if (!platform) return <main className="boot"><img className="brand-mark brand-logo" src="/brand/rr-logo-fucsia-on-negro.png" alt="Logo RR Aliados" width="44" height="44" /><span>Preparando RR Tareas…</span></main>;
 
   if (!workspace) {
     return (
       <main className="setup">
         <section className="setup-card">
-          <span className="brand-mark">R</span>
+          <img className="brand-mark brand-logo" src="/brand/rr-logo-fucsia-on-negro.png" alt="Logo RR Aliados" width="64" height="64" />
           <p className="eyebrow">RR ALIADOS · LOCAL</p>
           <h1>Tu bloque de tareas, sin perder el foco.</h1>
           <p>Empezá con un workspace local. No pide cuenta, red ni conexión con DashWeb.</p>
@@ -270,6 +308,7 @@ export default function App() {
             <button className="primary" onClick={() => void createLocalWorkspace()}>Crear workspace</button>
             <button onClick={() => void openLocalWorkspace()}>Abrir workspace</button>
           </div>
+          <ThemeControl value={themePreference} onChange={(value) => void changeTheme(value)} />
           <p className="fine">El MVP guarda datos localmente y ofrece copia manual para DashWeb.</p>
         </section>
       </main>
@@ -282,8 +321,9 @@ export default function App() {
   return (
     <main className="app-shell">
       <header className="topbar">
-        <div className="brand"><span className="brand-mark small">R</span><strong>RR Tareas</strong></div>
+        <div className="brand"><img className="brand-mark small brand-logo" src="/brand/rr-logo-fucsia-on-negro.png" alt="Logo RR Aliados" width="30" height="30" /><strong>RR Tareas</strong></div>
         <div className="top-actions">
+          <ThemeControl value={themePreference} onChange={(value) => void changeTheme(value)} />
           <button className="icon-button" aria-label="Alternar siempre encima" title="Siempre encima" onClick={() => void toggleAlwaysOnTop()}>
             {workspace.settings.alwaysOnTop ? "↑" : "↗"}
           </button>
@@ -393,6 +433,18 @@ export default function App() {
       <footer className="footer-bar"><span>{workspace.name}</span><button onClick={() => void exportFile("backup")}>Backup privado</button></footer>
       <div className="toast" role="status" aria-live="polite">{message}</div>
     </main>
+  );
+}
+
+function ThemeControl({ value, onChange }: { value: Settings["theme"]; onChange: (value: Settings["theme"]) => void }) {
+  return (
+    <label className="theme-control">
+      <span className="sr-only">Tema de RR Tareas</span>
+      <span aria-hidden="true">◐</span>
+      <select aria-label="Tema de RR Tareas" value={value} onChange={(event) => onChange(event.target.value as Settings["theme"])}>
+        {Object.entries(THEME_LABELS).map(([option, label]) => <option key={option} value={option}>{label}</option>)}
+      </select>
+    </label>
   );
 }
 

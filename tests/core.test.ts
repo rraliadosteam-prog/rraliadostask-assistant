@@ -26,6 +26,10 @@ describe("capture and domain", () => {
     expect(() => parseCapture("  \n ")).toThrow(/vacía/);
   });
 
+  it("preserves the selected theme in a new workspace", () => {
+    expect(createWorkspace("Test RR", "America/Bogota", "dark").settings.theme).toBe("dark");
+  });
+
   it("creates local task and note records", () => {
     const workspace = seeded();
     expect(workspace.tasks).toHaveLength(1);

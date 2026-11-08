@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=RR Tareas
+GenericName=Asistente local de tareas
+Comment=Captura y organiza tareas y notas de RR Aliados sin red
+Exec=@EXEC@
+Icon=@ICON@
+Terminal=false
+StartupNotify=true
+StartupWMClass=rr-tareas
+Categories=Office;
+Keywords=RR;Tareas;Notas;Aliados;

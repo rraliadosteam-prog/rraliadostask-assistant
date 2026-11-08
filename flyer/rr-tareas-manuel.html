@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RR Tareas · guía rápida para Manuel</title>
+  <style>
+    @page { size: A4; margin: 0; }
+    :root { --ink:#241827; --muted:#5f5861; --paper:#fffefa; --soft:#fbf7f2; --line:#d9cbd4; --pink:#8b124f; --pink-soft:#f3d3e2; --gold:#8b5f00; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#eadfe5; color:var(--ink); font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+    .page { width:210mm; min-height:297mm; margin:0 auto; padding:15mm 15mm 12mm; background:var(--paper); position:relative; overflow:hidden; }
+    .top { display:flex; align-items:center; gap:14px; padding-bottom:12px; border-bottom:3px solid var(--pink); }
+    .logo { width:64px; height:64px; border-radius:16px; background:#070001; object-fit:contain; border:1px solid #2d202b; }
+    .kicker { margin:0 0 3px; color:var(--pink); font-size:10px; font-weight:800; letter-spacing:.18em; }
+    h1 { margin:0; font-size:31px; line-height:1; letter-spacing:-.045em; }
+    .subtitle { margin:6px 0 0; color:var(--muted); font-size:12px; }
+    .intro { margin:14px 0; padding:11px 13px; border:1px solid var(--line); border-left:5px solid var(--pink); border-radius:12px; background:var(--soft); font-size:12px; line-height:1.45; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .card { border:1px solid var(--line); border-radius:12px; padding:11px 12px; background:#fff; break-inside:avoid; }
+    .card.wide { grid-column:1 / -1; }
+    .num { display:inline-grid; place-items:center; width:24px; height:24px; margin-right:6px; border-radius:50%; background:var(--pink); color:#fff; font-size:12px; font-weight:800; vertical-align:middle; }
+    h2 { display:inline; margin:0; font-size:15px; letter-spacing:-.02em; }
+    p, li { font-size:10.5px; line-height:1.42; }
+    p { margin:8px 0 0; }
+    ul, ol { margin:8px 0 0; padding-left:18px; }
+    li + li { margin-top:4px; }
+    code { padding:2px 4px; border-radius:4px; color:var(--pink); background:var(--pink-soft); font:9px ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .callout { margin-top:8px; padding:8px 9px; border-radius:8px; background:#fff6d8; color:#4e3900; font-size:10px; line-height:1.4; }
+    .privacy { background:#eef8f3; border-color:#b8dcca; }
+    .privacy strong { color:#1b6348; }
+    .footer { position:absolute; bottom:9mm; left:15mm; right:15mm; display:flex; justify-content:space-between; color:var(--muted); font-size:8.5px; border-top:1px solid var(--line); padding-top:6px; }
+    .link { color:var(--pink); font-weight:700; word-break:break-word; }
+    @media print { body { background:#fff; } .page { margin:0; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="top">
+      <img class="logo" src="../public/brand/rr-logo-fucsia-on-negro.png" alt="Logo RR Aliados">
+      <div>
+        <p class="kicker">RR ALIADOS · GUÍA DE PRUEBA</p>
+        <h1>RR Tareas</h1>
+        <p class="subtitle">Descargar · editar · usar, sin perder el foco</p>
+      </div>
+    </header>
+
+    <div class="intro"><strong>Qué es:</strong> un asistente local para capturar tareas y notas. No pide cuenta, no usa DashWeb automáticamente y guarda la información en este computador.</div>
+
+    <section class="grid">
+      <article class="card">
+        <span class="num">1</span><h2>Descargar</h2>
+        <ol>
+          <li>Abrí el repositorio: <span class="link">github.com/rraliadosteam-prog/rraliadostask-assistant</span>.</li>
+          <li>Elegí <strong>Code → Download ZIP</strong> y descomprimilo.</li>
+          <li>Instalá Node 24+, pnpm 12+ y Rust estable.</li>
+          <li>En la carpeta del proyecto ejecutá <code>pnpm install</code>.</li>
+          <li>Para compilar en Linux: <code>pnpm tauri build --no-bundle</code>.</li>
+        </ol>
+        <div class="callout">Si aparece una versión instalable en <strong>Releases</strong>, descargá el artefacto de tu sistema y verificá su <code>SHA256SUMS.txt</code>.</div>
+      </article>
+
+      <article class="card">
+        <span class="num">2</span><h2>Editar</h2>
+        <ol>
+          <li>Hacé un fork o cloná el repositorio.</li>
+          <li>Creá una rama: <code>feat/mi-cambio</code>.</li>
+          <li>Editá la interfaz o el dominio; no agregues secretos.</li>
+          <li>Corré <code>pnpm check</code> antes de compartir.</li>
+          <li>Subí la rama y abrí un Pull Request con capturas y pasos de prueba.</li>
+        </ol>
+        <p><strong>Regla:</strong> no edites directamente <code>main</code> y no compartas backups de trabajo real.</p>
+      </article>
+
+      <article class="card wide">
+        <span class="num">3</span><h2>Usar</h2>
+        <div class="grid" style="margin-top:8px">
+          <ul>
+            <li>Creá o abrí un workspace local.</li>
+            <li>Escribí una tarea o nota; <code>Ctrl/⌘ + Enter</code> guarda.</li>
+            <li>Organizá por estado, prioridad, etiquetas, fecha y checklist.</li>
+          </ul>
+          <ul>
+            <li>Usá el selector <strong>Sistema / Claro / Oscuro</strong> según tu pantalla.</li>
+            <li>El estado indica <strong>Guardado local</strong>.</li>
+            <li>Preparar entrega solo copia un preview; no crea nada en DashWeb.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card privacy wide">
+        <span class="num">✓</span><h2>Privacidad y reporte</h2>
+        <p><strong>Todo queda local:</strong> no hay telemetría ni conexión automática. Para reportar un problema, enviá versión, sistema, pasos para reproducir y captura; nunca envíes tokens, credenciales ni el backup de un workspace real.</p>
+      </article>
+    </section>
+
+    <footer class="footer"><span>RR Aliados · RR Tareas</span><span>Guía rápida · 07/11/2026 · Bogotá</span></footer>
+  </main>
+</body>
+</html>

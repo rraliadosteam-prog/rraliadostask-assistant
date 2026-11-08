@@ -1,5 +1,5 @@
 import { createWorkspace } from "./core";
-import type { Workspace } from "./domain";
+import type { Settings, Workspace } from "./domain";
 import type { PlatformPort } from "./platform";
 
 /** The file that holds one workspace, inside the app data root. */
@@ -59,8 +59,9 @@ export async function createWorkspaceAt(
 	platform: WorkspaceWriter,
 	root: string,
 	name: string,
+	theme: Settings["theme"] = "system",
 ): Promise<{ workspace: Workspace; path: string }> {
-	const workspace = createWorkspace(name);
+	const workspace = createWorkspace(name, "America/Bogota", theme);
 	const path = workspaceFilePath(root, workspace.workspaceId);
 	await platform.writeWorkspace(path, `${JSON.stringify(workspace, null, 2)}\n`);
 	return { workspace, path };

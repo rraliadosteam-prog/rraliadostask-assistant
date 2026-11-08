@@ -19,7 +19,7 @@ Copiar nunca confirma que una tarea haya sido creada en DashWeb.
 ## Arquitectura
 
 - UI React + TypeScript.
-- Shell Tauri 2 para ventana flotante/redimensionable, portapapeles y archivos locales.
+- Shell Tauri 2 para ventana flotante/redimensionable, portapapeles, archivos locales y el logo canónico RR Aliados.
 - Dominio TypeScript sin dependencias de red.
 - Workspace authoritative en JSON versionado (`rr-task-workspace`, versión 2).
 - Escritura atómica con backup `.bak`; un archivo corrupto no se reemplaza silenciosamente.
@@ -43,7 +43,11 @@ pnpm tauri dev
 En un escritorio Tauri:
 
 - `pnpm tauri dev` abre la app.
-- `pnpm tauri build` genera el bundle cuando el entorno nativo esté completo.
+- `pnpm tauri build` genera los bundles de escritorio cuando el entorno nativo esté completo.
+- `pnpm tauri build --no-bundle` genera el ejecutable nativo sin instalador.
+- `env HOME=/home/deadkiss ./scripts/install-desktop-entry.sh` instala el launcher `RR Tareas` con el logo RR en Linux.
+
+La interfaz ofrece `Sistema`, `Claro` y `Oscuro`. La preferencia se guarda en el workspace y también se recuerda localmente antes de crear el primero. Los colores incluyen foco visible y contraste reforzado para texto, controles y estados.
 
 ## Datos
 
@@ -69,10 +73,11 @@ Los comandos de verificación se ejecutan desde este repositorio:
 - `pnpm test`
 - `pnpm build`
 
-Los resultados exactos de la corrida local quedan en `VERIFICATION.md`.
+Los resultados exactos de la corrida local deben quedar en `VERIFICATION.md`, generado durante la verificación, no como promesa en este README.
 
 ## Decisiones pendientes
 
+- Organización, nombre final y visibilidad del repositorio.
 - Licencia del código.
 - Target de release firmado y artefactos por plataforma.
 - Contrato y autorización para escritura API con DashWeb.
@@ -81,6 +86,8 @@ Los resultados exactos de la corrida local quedan en `VERIFICATION.md`.
 
 ## Publicación
 
-El workflow `.github/workflows/release.yml` compila la app para Linux, Windows y macOS, adjunta los artefactos con `SHA256SUMS.txt` a un release de GitHub y se puede lanzar a mano desde **Actions → release → Run workflow**. La publicación de un tag la hace una persona con permiso de escritura en el repositorio.
+El repositorio público es `rraliadosteam-prog/rraliadostask-assistant`. El workflow `.github/workflows/release.yml` compila la app para Linux, Windows y macOS, adjunta los artefactos con `SHA256SUMS.txt` a un release de GitHub y se puede lanzar a mano desde **Actions → release → Run workflow**. La publicación de un tag la hace una persona con permiso de escritura en el repositorio.
 
-Los lockfiles (`pnpm-lock.yaml` y `src-tauri/Cargo.lock`) los genera la CI en el workflow `pin-lockfiles`, que abre un pull request con las versiones resueltas; no se editan a mano.
+El asset de marca local es `public/brand/rr-logo-fucsia-on-negro.png`, copiado desde la fuente canónica RR y usado en la interfaz, el icono nativo y el launcher Linux.
+
+El flyer de prueba y entrega está en `flyer/out/rr-tareas-manuel.pdf` y `flyer/out/rr-tareas-manuel.png`; cubre descarga, edición, uso y privacidad.

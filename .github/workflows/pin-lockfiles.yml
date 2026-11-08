@@ -1,0 +1,58 @@
+name: pin-lockfiles
+
+# Generates the dependency lockfiles (pnpm-lock.yaml and src-tauri/Cargo.lock) and
+# opens a pull request with them, so the published repository pins exact
+# dependency versions without anyone editing generated files by hand.
+on:
+  workflow_dispatch:
+  schedule:
+    - name: weekly
+      cron: "17 5 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  pin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Resolve the JavaScript lockfile
+        run: pnpm install --lockfile-only
+
+      - name: Resolve the Rust lockfile
+        working-directory: src-tauri
+        run: cargo generate-lockfile
+
+      - name: Check whether anything changed
+        id: diff
+        run: |
+          git add --force -- pnpm-lock.yaml src-tauri/Cargo.lock
+          if git diff --cached --quiet -- pnpm-lock.yaml src-tauri/Cargo.lock; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open a pull request with the pinned versions
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/pin-lockfiles
+          commit-message: "chore: pin dependency lockfiles"
+          title: "chore: fijar versiones exactas de dependencias"
+          body: |
+            Regenera `pnpm-lock.yaml` y `src-tauri/Cargo.lock` con las versiones resueltas hoy.
+            Lo genera la CI; no se edita a mano.
+          add-paths: |
+            pnpm-lock.yaml
+            src-tauri/Cargo.lock

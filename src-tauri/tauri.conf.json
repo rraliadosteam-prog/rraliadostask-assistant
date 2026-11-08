@@ -27,8 +27,12 @@
     }
   },
   "bundle": {
-    "active": false,
+    "active": true,
     "targets": "all",
-    "icon": ["icons/icon.png"]
+    "icon": ["icons/icon.png"],
+    "category": "Office",
+    "shortDescription": "Asistente local de tareas y notas de RR Aliados",
+    "longDescription": "RR Tareas captura y organiza tareas y notas localmente, sin cuenta, red ni secretos.",
+    "copyright": "RR Aliados"
   }
 }

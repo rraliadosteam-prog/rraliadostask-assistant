@@ -47,7 +47,11 @@ export function parseCapture(text: string): CaptureDraft {
   return { title, body };
 }
 
-export function createWorkspace(name: string, timezone = "America/Bogota"): Workspace {
+export function createWorkspace(
+  name: string,
+  timezone = "America/Bogota",
+  theme: Workspace["settings"]["theme"] = "system",
+): Workspace {
   const timestamp = nowIso();
   return {
     format: FORMAT,
@@ -67,7 +71,7 @@ export function createWorkspace(name: string, timezone = "America/Bogota"): Work
       alwaysOnTop: false,
       privateMode: true,
       timezone,
-      theme: "system",
+      theme,
     },
   };
 }
